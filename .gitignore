@@ -1,0 +1,8 @@
+.env
+notes.md
+examples
+.venv
+__pycache__/
+*.pyc
+gmail_fetcher/credentials.json
+gmail_fetcher/token.json
