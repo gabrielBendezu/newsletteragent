@@ -10,7 +10,7 @@ from pathlib import Path
 # Add your project root to path
 sys.path.append(str(Path(__file__).parent.parent))
 
-from your_module.newsletter_retriever import NewsletterRetriever
+from retriever import NewsletterRetriever
 from settings import Settings
 
 
