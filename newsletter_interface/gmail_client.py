@@ -8,7 +8,7 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
 from newsletter_interface.newsletter import NewsletterEmail
-from newsletter_interface.email_parser import parse_gmail_message
+from newsletter_interface.email_parser import parse_gmail_raw_message
 
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
     

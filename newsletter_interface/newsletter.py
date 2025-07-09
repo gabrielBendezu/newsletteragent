@@ -10,7 +10,7 @@ class NewsletterEmail:
     timestamp: int
     content_plain: str
     newsletter_name: str
-    article_urls: List[str]
+    primary_url: str
     snippet: str
     
     def to_dict(self) -> Dict:
