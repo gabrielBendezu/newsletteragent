@@ -39,12 +39,29 @@ class GmailClient:
             return []
 
     def get_message(self, message_id: str) -> Optional[NewsletterEmail]:
+        """Get a single message by ID and return as NewsletterEmail."""
         try:
-            message = self.service.users().messages().get(userId='me', id=message_id, format='full').execute()
+            message = self.service.users().messages().get(
+                userId='me',
+                id=message_id,
+                format='raw'
+            ).execute()
             return parse_gmail_raw_message(message)
         except HttpError as e:
             print(f"Error getting message {message_id}: {e}")
             return None
+
+    def get_messages(self, query: str, max_results: int = 50) -> List[NewsletterEmail]:
+        """Get multiple messages based on search query."""
+        message_ids = self.list_message_ids(query, max_results)
+        messages = []
+        
+        for msg_id in message_ids:
+            message = self.get_message(msg_id)
+            if message:
+                messages.append(message)
+        
+        return messages
 
     def mark_as_read(self, message_ids: List[str]):
         for msg_id in message_ids:

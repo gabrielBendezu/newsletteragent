@@ -37,13 +37,43 @@ def extract_primary_url(content_html: str, content_plain: str, sender_email: str
         if canonical_match:
             return canonical_match.group(1)
     
-    # Platform-specific URL extraction patterns
+    # For Substack specifically, look for the title/subject line link first
+    if content_html and 'substack' in sender_email.lower():
+        # Look for the main title/heading with a link - this is usually the article title
+        title_patterns = [
+            # H1 with link
+            r'<h1[^>]*><a[^>]+href=["\']([^"\']+\.substack\.com/p/[^"\'?]+)["\'][^>]*>',
+            # Any heading with substack link
+            r'<h[1-6][^>]*><a[^>]+href=["\']([^"\']+\.substack\.com/p/[^"\'?]+)["\'][^>]*>',
+            # Link with large/prominent text styling that contains the title
+            r'<a[^>]+href=["\']([^"\']+\.substack\.com/p/[^"\'?]+)["\'][^>]*>[^<]*<(?:strong|b|span[^>]*font-size[^>]*large|span[^>]*font-weight[^>]*bold)',
+            # Direct link in title area (common pattern)
+            r'<a[^>]+href=["\']([^"\']+\.substack\.com/p/[^"\'?]+)["\'][^>]*>[^<]*(?:substack|newsletter|article)',
+        ]
+        
+        for pattern in title_patterns:
+            matches = re.findall(pattern, content_html, re.IGNORECASE | re.DOTALL)
+            if matches:
+                return matches[0]
+    
+    # General URL extraction patterns
     url_pattern = r'https?://[^\s<>"{\|}\\^`\[\]]+'
     urls = re.findall(url_pattern, content)
     
     # Skip tracking/utility URLs
     skip_domains = ['unsubscribe', 'tracking', 'pixel', 'open.substack.com', 'mailchi.mp', 
-                   'constantcontact.com', 'campaign-archive.com', 'us-east-1.amazonaws.com']
+                   'constantcontact.com', 'campaign-archive.com', 'us-east-1.amazonaws.com',
+                   'substack.com/email-capture', 'substack.com/subscribe']
+    
+    # For Substack, prioritize /p/ URLs (post URLs)
+    if 'substack' in sender_email.lower():
+        substack_post_pattern = r'https://[^/]+\.substack\.com/p/[^?\s<>"]+' 
+        substack_urls = re.findall(substack_post_pattern, content)
+        
+        # Filter out tracking URLs and return the first clean one
+        for url in substack_urls:
+            if not any(skip in url.lower() for skip in skip_domains):
+                return url
     
     # Platform-specific primary URL detection
     domain_patterns = {
@@ -61,7 +91,10 @@ def extract_primary_url(content_html: str, content_plain: str, sender_email: str
         if domain in sender_email.lower():
             matches = re.findall(pattern, content)
             if matches:
-                return matches[0]
+                # Return first non-tracking URL
+                for url in matches:
+                    if not any(skip in url.lower() for skip in skip_domains):
+                        return url
     
     # Look for common newsletter URL patterns
     newsletter_patterns = [
@@ -76,7 +109,10 @@ def extract_primary_url(content_html: str, content_plain: str, sender_email: str
     for pattern in newsletter_patterns:
         matches = re.findall(pattern, content)
         if matches:
-            return matches[0]
+            # Return first non-tracking URL
+            for url in matches:
+                if not any(skip in url.lower() for skip in skip_domains):
+                    return url
     
     # Look for "View in browser" or "Read online" links
     if content_html:

@@ -35,6 +35,12 @@ def test_fetch_unread_newsletters(service):
     for idx, email in enumerate(newsletters, start=1):
         subject = getattr(email, 'subject', '(No Subject)')
         print(f"{idx}. {subject}")
+    for newsletter in newsletters:
+        print(f"Subject: {newsletter.subject}") 
+        print(f"From: {newsletter.sender}")
+        print(f"Newsletter: {newsletter.newsletter_name}")
+        print(f"URL: {newsletter.primary_url}")
+        print("-" * 50)
 
 def process_and_store_newsletters(newsletters: List[NewsletterEmail]) -> None:
     """Embed newsletter content and store in Qdrant."""
