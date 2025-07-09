@@ -57,37 +57,30 @@ def query_rag():
     """Query RAG system and return contextual results"""
     try:
         # Parse query parameters
-        question = request.args.get('question')
-        if not question:
-            return jsonify({'error': 'Missing required parameter: question'}), 400
+        user_query = request.args.get('user_query')
+        if not user_query:
+            return jsonify({'error': 'Missing required parameter: user_query'}), 400
 
-        logger.info(f"Received query: {question}")
+        logger.info(f"Received query: {user_query}")
 
         from rag_pipeline.rag_client import query_rag_system  
 
-        context: List[RAGChunk] = query_rag_system(question)
-        # Chunk = {
-        # "id": "chunk_xyz123",
-        # "content": "Here's a key insight from the newsletter...",
-        # "headline": "AI in July: What’s Next",
-        # "author": "Tech Digest",
-        # "sourceUrl": "https://techdigest.substack.com/p/ai-in-july",
-        # "publishedAt": "2025-07-06T08:30:00Z",
-        # "tags": ["AI", "newsletter", "trends"]
-        # }
+        #context: List[RAGChunk] = query_rag_system(user_query)
+        context = test_context
 
-        # def query_rag_system(question: str) -> List[RAGChunk]: (inside rag_client)
+
+        # def query_rag_system(user_query: str) -> List[RAGChunk]: (inside rag_client)
 
         if not context:
             return jsonify({
                 'success': False,
                 'error': 'No relevant context found',
-                'question': question
+                'user_query': user_query
             }), 404
 
         return jsonify({
             'success': True,
-            'question': question,
+            'user_query': user_query,
             'context': context,
             'timestamp': datetime.now().isoformat()
         })
@@ -99,6 +92,37 @@ def query_rag():
             'error': 'Failed to query RAG system',
             'message': str(e)
         }), 500
+
+## Tests
+test_context: List[RAGChunk] = [
+    {
+        "id": "1",
+        "content": "Bananas have become spherical according to Dr Ibrahim.",
+        "headline": "Bananas",
+        "author": "Alice",
+        "sourceUrl": "https://example.com/article1",
+        "publishedAt": "2023-10-01T12:00:00Z",
+        "tags": ["tag1", "tag2"]
+    },
+    {
+        "id": "2",
+        "content": "Oranges have become cubes according to the EP.",
+        "headline": "Oranges",
+        "author": "Bob",
+        "sourceUrl": "https://example.com/article2",
+        "publishedAt": "2023-10-02T15:30:00Z",
+        "tags": ["tag3"]
+    },
+    {
+        "id": "3",
+        "content": "Apples have turned blue according to Macnimmmir.",
+        "headline": "Apples",
+        "author": "Carol",
+        "sourceUrl": "https://example.com/article3",
+        "publishedAt": "2023-10-03T09:45:00Z",
+        "tags": None
+    }
+]
 
 @app.errorhandler(429)
 def rate_limit_exceeded(e):
