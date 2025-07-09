@@ -2,13 +2,10 @@
 
 from newsletter_interface.gmail_client import get_gmail_service, GmailClient
 from newsletter_interface.embedder import embed  
-from newsletter_interface.qdrant_uploader import store_vectors
+from newsletter_interface.qdrant_uploader import store_newsletters
 from newsletter_interface.newsletter import NewsletterEmail
 
 from typing import List
-
-def store_newsletter():
-    ...
 
 def fetch_unread_newsletters(service) -> List[NewsletterEmail]:
     client = GmailClient(service)
@@ -32,30 +29,27 @@ def test_fetch_unread_newsletters(service):
         return
 
     print(f"Fetched {len(newsletters)} unread newsletters:")
-    for idx, email in enumerate(newsletters, start=1):
-        subject = getattr(email, 'subject', '(No Subject)')
-        print(f"{idx}. {subject}")
-    for newsletter in newsletters:
-        print(f"Subject: {newsletter.subject}") 
-        print(f"From: {newsletter.sender}")
-        print(f"Newsletter: {newsletter.newsletter_name}")
-        print(f"URL: {newsletter.primary_url}")
-        print("-" * 50)
+    # for idx, email in enumerate(newsletters, start=1):
+    #     subject = getattr(email, 'subject', '(No Subject)')
+    #     print(f"{idx}. {subject}")
+    # for newsletter in newsletters:
+    #     print(f"Subject: {newsletter.subject}") 
+    #     print(f"From: {newsletter.sender}")
+    #     print(f"Newsletter: {newsletter.newsletter_name}")
+    #     print(f"URL: {newsletter.primary_url}")
+    #     print("-" * 50)
+    # print(newsletters[1].subject)
+    # print(newsletters[1].content_plain)
 
-def process_and_store_newsletters(newsletters: List[NewsletterEmail]) -> None:
-    """Embed newsletter content and store in Qdrant."""
-    vectors = embed(newsletters)     # List[Dict] with 'id', 'vector', 'metadata'
-    store_vectors(vectors) 
-
-def run_local_ingestion_pipeline():
+def run_ingestion_pipeline():
     """Main orchestrator."""
     service = get_gmail_service()
-    #newsletters = fetch_unread_newsletters(service)
-    test_fetch_unread_newsletters(service)
-    # if newsletters:
-    #     process_and_store_newsletters(newsletters)
-    # else:
-    #     print("No new newsletters to process.")
+    newsletters = fetch_unread_newsletters(service)
+    # test_fetch_unread_newsletters(service)
+    if newsletters:
+        store_newsletters(newsletters)
+    else:
+        print("No new newsletters to process.")
 
 if __name__ == "__main__":
-    run_local_ingestion_pipeline()
+    run_ingestion_pipeline()
