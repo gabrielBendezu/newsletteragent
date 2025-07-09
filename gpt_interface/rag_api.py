@@ -65,7 +65,7 @@ def query_rag():
 
         from retrieval_pipeline.rag_client import query_rag_system  
 
-        context: List[RAGChunk] = query_rag_system(user_query=user_query, top_k=5)
+        context: List[RAGChunk] = query_rag_system(user_query=user_query)
 
         # def query_rag_system(user_query: str) -> List[RAGChunk]: (inside rag_client)
 

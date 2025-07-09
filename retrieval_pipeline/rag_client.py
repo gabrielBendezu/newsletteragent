@@ -1,6 +1,6 @@
 from typing import List
 
-from typing import List, Dict, Any, Optional
+from typing import List, Optional
 from .retriever import NewsletterRetriever
 from ..models import RAGChunk
 import logging
