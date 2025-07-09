@@ -1,5 +1,4 @@
 from haystack import Pipeline, Document
-from haystack.utils import Secret
 from haystack.components.preprocessors import DocumentCleaner, DocumentSplitter
 from haystack.components.embedders import OpenAIDocumentEmbedder
 from haystack.components.writers import DocumentWriter
