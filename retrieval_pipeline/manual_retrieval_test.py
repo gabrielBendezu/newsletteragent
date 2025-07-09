@@ -7,7 +7,6 @@ import os
 import sys
 from pathlib import Path
 
-# Add your project root to path
 sys.path.append(str(Path(__file__).parent.parent))
 
 from retriever import NewsletterRetriever
@@ -24,10 +23,10 @@ def test_basic_retrieval():
         
         # Test queries
         test_queries = [
-            "artificial intelligence",
-            "machine learning trends",
-            "startup funding",
-            "tech news"
+            "How can the democrats defeat trump",
+            "How can the democrats stop the big beautiful bill",
+            "American politics analysis",
+            "How will trumps big beautiful affect the U.S. deficit"
         ]
         
         for query in test_queries:
