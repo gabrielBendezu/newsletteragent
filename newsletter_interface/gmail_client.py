@@ -41,7 +41,7 @@ class GmailClient:
     def get_message(self, message_id: str) -> Optional[NewsletterEmail]:
         try:
             message = self.service.users().messages().get(userId='me', id=message_id, format='full').execute()
-            return parse_gmail_message(message)
+            return parse_gmail_raw_message(message)
         except HttpError as e:
             print(f"Error getting message {message_id}: {e}")
             return None
