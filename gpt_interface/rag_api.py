@@ -6,7 +6,7 @@ from typing import List
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
-from rag_chunk import RAGChunk
+from ..models import RAGChunk
 
 app = Flask(__name__)
 CORS(app)
@@ -63,11 +63,9 @@ def query_rag():
 
         logger.info(f"Received query: {user_query}")
 
-        from rag_pipeline.rag_client import query_rag_system  
+        from retrieval_pipeline.rag_client import query_rag_system  
 
-        #context: List[RAGChunk] = query_rag_system(user_query)
-        context = test_context
-
+        context: List[RAGChunk] = query_rag_system(user_query=user_query, top_k=5)
 
         # def query_rag_system(user_query: str) -> List[RAGChunk]: (inside rag_client)
 
@@ -94,35 +92,35 @@ def query_rag():
         }), 500
 
 ## Tests
-test_context: List[RAGChunk] = [
-    {
-        "id": "1",
-        "content": "Bananas have become spherical according to Dr Ibrahim.",
-        "headline": "Bananas",
-        "author": "Alice",
-        "sourceUrl": "https://example.com/article1",
-        "publishedAt": "2023-10-01T12:00:00Z",
-        "tags": ["tag1", "tag2"]
-    },
-    {
-        "id": "2",
-        "content": "Oranges have become cubes according to the EP.",
-        "headline": "Oranges",
-        "author": "Bob",
-        "sourceUrl": "https://example.com/article2",
-        "publishedAt": "2023-10-02T15:30:00Z",
-        "tags": ["tag3"]
-    },
-    {
-        "id": "3",
-        "content": "Apples have turned blue according to Macnimmmir.",
-        "headline": "Apples",
-        "author": "Carol",
-        "sourceUrl": "https://example.com/article3",
-        "publishedAt": "2023-10-03T09:45:00Z",
-        "tags": None
-    }
-]
+# test_context: List[RAGChunk] = [
+#     {
+#         "id": "1",
+#         "content": "Bananas have become spherical according to Dr Ibrahim.",
+#         "subine": "Bananas",
+#         "author": "Alice",
+#         "sourceUrl": "https://example.com/article1",
+#         "publishedAt": "2023-10-01T12:00:00Z",
+#         "tags": ["tag1", "tag2"]
+#     },
+#     {
+#         "id": "2",
+#         "content": "Oranges have become cubes according to the EP.",
+#         "headline": "Oranges",
+#         "author": "Bob",
+#         "sourceUrl": "https://example.com/article2",
+#         "publishedAt": "2023-10-02T15:30:00Z",
+#         "tags": ["tag3"]
+#     },
+#     {
+#         "id": "3",
+#         "content": "Apples have turned blue according to Macnimmmir.",
+#         "headline": "Apples",
+#         "author": "Carol",
+#         "sourceUrl": "https://example.com/article3",
+#         "publishedAt": "2023-10-03T09:45:00Z",
+#         "tags": None
+#     }
+# ]
 
 @app.errorhandler(429)
 def rate_limit_exceeded(e):
