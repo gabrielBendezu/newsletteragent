@@ -6,3 +6,5 @@ __pycache__/
 *.pyc
 gmail_fetcher/credentials.json
 gmail_fetcher/token.json
+credentials.json
+token.json
