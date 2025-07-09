@@ -1,0 +1,1 @@
+"""loads openai embedding model to embed stuff"""
