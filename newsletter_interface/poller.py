@@ -1,7 +1,6 @@
 """ Calls the gmail client every 20 minutes or so, orchestrates everything with parsing and embedding and pushing to qdrant """
 
 from newsletter_interface.gmail_client import get_gmail_service, GmailClient
-from newsletter_interface.embedder import embed  
 from newsletter_interface.qdrant_uploader import store_newsletters
 from newsletter_interface.newsletter import NewsletterEmail
 
