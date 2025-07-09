@@ -2,7 +2,7 @@
 import base64
 import re
 from typing import Dict, Tuple, List
-from newsletter import NewsletterEmail
+from newsletter_interface.newsletter import NewsletterEmail
 
 def parse_sender(sender: str) -> Tuple[str, str]:
     if '<' in sender and '>' in sender:

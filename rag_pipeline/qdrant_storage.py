@@ -13,17 +13,6 @@ from haystack_integrations.document_stores.qdrant import QdrantDocumentStore
 from haystack_integrations.components.retrievers.qdrant import QdrantEmbeddingRetriever
 from haystack.utils import Secret
 
-
-@dataclass
-class QdrantConfig:
-    """Configuration for Qdrant connection"""
-    url: str = "https://07d9c379-addb-4c4c-a4c6-5a6834c9f9aa.eu-central-1-0.aws.cloud.qdrant.io"
-    api_key: Secret = Secret.from_env_var("QDRANT_API_KEY")
-    collection_name: str = "newsletter_articles"
-    embedding_model: str = "text-embedding-3-small"
-    embedding_dim: int = 384  # Dimension for all-MiniLM-L6-v2
-
-
 class NewsletterQdrantStorage:
     def __init__(self, config: QdrantConfig = None):
         self.config = config or QdrantConfig()

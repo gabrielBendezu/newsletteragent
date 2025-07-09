@@ -1,1 +1,0 @@
-""" Calls the gmail client every 20 minutes or so, orchestrates everything with parsing and embedding and pushing to qdrant """

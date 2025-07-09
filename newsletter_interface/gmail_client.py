@@ -1,12 +1,4 @@
-"""
-Manual Gmail Newsletter Fetcher
-Polls Gmail for newsletter emails and extracts content + metadata
-"""
-
 import os
-import json
-import base64
-import re
 from typing import List, Optional
 
 from google.auth.transport.requests import Request
@@ -15,10 +7,10 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-from newsletter import NewsletterEmail
-from email_parser import parse_gmail_message
+from newsletter_interface.newsletter import NewsletterEmail
+from newsletter_interface.email_parser import parse_gmail_message
 
-SCOPES = ['https://www.googleapis.com/auth/gmail.read']
+SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
     
 def get_gmail_service(credentials_file='credentials.json', token_file='token.json'):
     creds = None
@@ -64,43 +56,3 @@ class GmailClient:
                 ).execute()
             except HttpError as e:
                 print(f"Error marking message {msg_id} as read: {e}")
-
-def main():
-    # Test puts emails into the newsletters.json
-    service = get_gmail_service
-    fetcher = GmailClient(service)
-    
-    # Examples:
-    # query = "from:substack.com newer_than:7d"  # Last 7 days from Substack
-    # query = "subject:newsletter newer_than:3d"  # Last 3 days with "newsletter" in subject
-    # query = None  # Use default query
-    
-    # query = "newer_than:7d"  # Last 7 days
-    query = (
-        'is:unread AND (from:substack.com OR from:newsletter OR from:noreply '
-        'OR subject:newsletter OR from:medium.com OR from:substackcdn.com)'
-    )
-    
-    newsletters = fetcher.fetch_newsletters(query=query, max_results=20)
-    
-    if newsletters:
-        # Save to JSON
-        fetcher.save_to_json(newsletters)
-        
-        # Print summary
-        print("\n" + "="*50)
-        print("SUMMARY")
-        print("="*50)
-        
-        for newsletter in newsletters:
-            print(f"📧 {newsletter.newsletter_name}")
-            print(f"   Subject: {newsletter.subject}")
-            print(f"   From: {newsletter.sender_name}")
-            print(f"   Date: {newsletter.date}")
-            print(f"   URLs: {len(newsletter.article_urls)}")
-            print(f"   Content: {len(newsletter.content_plain)} chars (plain), {len(newsletter.content_html)} chars (html)")
-            print()
-
-
-if __name__ == "__main__":
-    main()

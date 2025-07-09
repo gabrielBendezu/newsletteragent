@@ -1,0 +1,4 @@
+"""Inserts and updates vectors in qdrant, can be the one who tags with metadata"""
+
+def store_vectors():
+    ...
