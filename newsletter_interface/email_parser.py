@@ -67,17 +67,21 @@ def extract_primary_url(content_html: str, content_plain: str, sender_email: str
     
     # For Substack, prioritize /p/ URLs (post URLs)
     if 'substack' in sender_email.lower():
-        substack_post_pattern = r'https://[^/]+\.substack\.com/p/[^?\s<>"]+' 
-        substack_urls = re.findall(substack_post_pattern, content)
+        substack_patterns = [
+            r'https://[^/]+\.substack\.com/p/[^?\s<>"]+',  # Traditional format
+            r'https://substack\.com/app-link/post\?[^?\s<>"]*'  # App link format
+        ]
         
-        # Filter out tracking URLs and return the first clean one
-        for url in substack_urls:
-            if not any(skip in url.lower() for skip in skip_domains):
-                return url
+        for pattern in substack_patterns:
+            substack_urls = re.findall(pattern, content)
+            # Filter out tracking URLs and return the first clean one
+            for url in substack_urls:
+                if not any(skip in url.lower() for skip in skip_domains):
+                    return url
     
     # Platform-specific primary URL detection
     domain_patterns = {
-        'substack.com': r'https://[^/]+\.substack\.com/p/[^?\s<>"]+',
+        'substack.com': r'https://(?:[^/]+\.substack\.com/p/[^?\s<>"]+|substack\.com/app-link/post\?[^?\s<>"]*)',
         'medium.com': r'https://[^/]*medium\.com/[^?\s<>"]+',
         'substackcdn.com': r'https://[^/]+\.substack\.com/p/[^?\s<>"]+',  # Sometimes referenced in content
         'beehiiv.com': r'https://[^/]+\.beehiiv\.com/p/[^?\s<>"]+',
