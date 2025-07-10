@@ -6,7 +6,7 @@ from haystack_integrations.document_stores.qdrant import QdrantDocumentStore
 
 from typing import List, Dict, Any, Optional
 from settings import Settings 
-from ..models import RAGChunk
+from models import RAGChunk
 
 
 class NewsletterRetriever:
