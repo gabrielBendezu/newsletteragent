@@ -1,324 +1,97 @@
 openapi: 3.1.0
 info:
-  title: Gmail Newsletter API for CustomGPT
-  description: API to fetch Gmail newsletter emails for CustomGPT integration
+  title: Newsletter Context API for CustomGPT
+  description: Returns processed newsletter chunks for CustomGPT RAG queries
   version: 1.0.0
 servers:
-  - url: https://localhost
+  - url: https://01208d4c51c2.ngrok-free.app
     description: Development server
-
 paths:
-  /api/emails:
+  /api/newsletter-context:
     get:
-      summary: Get latest newsletter emails
-      description: Retrieves the latest newsletter emails from Gmail inbox
-      operationId: GetLatestNewsletters
-      parameters:
-        - name: maxResults
-          in: query
-          description: Maximum number of emails to return (default 10, max 100)
-          required: false
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            default: 10
-        - name: query
-          in: query
-          description: Gmail search query (e.g., "is:unread", "from:substack.com", "newer_than:7d")
-          required: false
-          schema:
-            type: string
-        - name: includeBody
-          in: query
-          description: Whether to include full email body content
-          required: false
-          schema:
-            type: boolean
-            default: false
-        - name: markAsRead
-          in: query
-          description: Whether to mark emails as read after fetching
-          required: false
-          schema:
-            type: boolean
-            default: false
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  count:
-                    type: integer
-                  emails:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: string
-                        threadId:
-                          type: string
-                        from:
-                          type: string
-                        fromName:
-                          type: string
-                        to:
-                          type: string
-                        subject:
-                          type: string
-                        snippet:
-                          type: string
-                        date:
-                          type: string
-                        timestamp:
-                          type: integer
-                        newsletterName:
-                          type: string
-                        articleUrls:
-                          type: array
-                          items:
-                            type: string
-                        labels:
-                          type: array
-                          items:
-                            type: string
-                        bodyPlain:
-                          type: string
-                        bodyHtml:
-                          type: string
-                  timestamp:
-                    type: string
-                    format: date-time
-        '400':
-          description: Bad request
-        '401':
-          description: Unauthorized
-        '429':
-          description: Rate limit exceeded
-        '500':
-          description: Server error
-
-  /api/newsletters:
-    get:
-      summary: Get newsletter summary
-      description: Get summary of recent newsletters grouped by sender
-      operationId: GetNewsLettersSummary
+      summary: Get recent newsletter content chunks
+      description: Retrieves processed content chunks from newsletters for use in GPT responses
+      operationId: GetNewsletterContext
       parameters:
         - name: days
           in: query
-          description: Number of days to look back (default 7)
-          required: false
+          description: Number of past days to search (default is 7)
+          required: true
           schema:
             type: integer
-            minimum: 1
-            maximum: 30
             default: 7
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  count:
-                    type: integer
-                  newsletters:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        name:
-                          type: string
-                        sender:
-                          type: string
-                        senderName:
-                          type: string
-                        count:
-                          type: integer
-                        latestSubject:
-                          type: string
-                        latestDate:
-                          type: string
-                        latestTimestamp:
-                          type: integer
-                  period:
-                    type: string
-                  timestamp:
-                    type: string
-                    format: date-time
-
-  /api/search:
-    get:
-      summary: Search emails
-      description: Search emails with custom Gmail query
-      operationId: SearchEmails
-      parameters:
-        - name: q
+            minimum: 1
+        - name: user_query
           in: query
-          description: Gmail search query
+          description: the entire user user_query to search relevant content for
           required: true
           schema:
             type: string
         - name: maxResults
           in: query
-          description: Maximum number of results (default 10, max 50)
-          required: false
+          description: Maximum number of content chunks to return (default 10, max 50)
+          required: true
           schema:
             type: integer
-            minimum: 1
-            maximum: 50
             default: 10
+            maximum: 50
       responses:
-        '200':
-          description: Successful response
+        "200":
+          description: Successfully retrieved context chunks
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  success:
-                    type: boolean
                   count:
                     type: integer
-                  emails:
+                  chunks:
                     type: array
                     items:
                       type: object
                       properties:
-                        id:
+                        content:
                           type: string
-                        threadId:
-                          type: string
-                        from:
-                          type: string
-                        fromName:
-                          type: string
-                        subject:
-                          type: string
-                        snippet:
-                          type: string
-                        date:
-                          type: string
-                        timestamp:
-                          type: integer
-                        newsletterName:
-                          type: string
-                        articleUrls:
-                          type: array
-                          items:
-                            type: string
-                        labels:
-                          type: array
-                          items:
-                            type: string
-                  query:
-                    type: string
-                  timestamp:
-                    type: string
-                    format: date-time
-
-  /api/emails/{messageId}:
-    get:
-      summary: Get specific email
-      description: Retrieves a specific email by its message ID
-      operationId: GetEmail
-      parameters:
-        - name: messageId
-          in: path
-          required: true
-          description: Gmail message ID
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  email:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-                      threadId:
-                        type: string
-                      from:
-                        type: string
-                      to:
-                        type: string
-                      subject:
-                        type: string
-                      snippet:
-                        type: string
-                      date:
-                        type: string
-                        format: date-time
-                      body:
-                        type: string
-                      labels:
-                        type: array
-                        items:
-                          type: string
-                  timestamp:
-                    type: string
-                    format: date-time
-
-components:
-  schemas:
-    Pet:
-      type: object
-      required:
-        - name
-        - photoUrls
-      properties:
-        id:
-          type: integer
-          format: int64
-        category:
-          $ref: "#/components/schemas/Category"
-        name:
-          type: string
-          example: doggie
-        photoUrls:
-          type: array
-          items:
-            type: string
-        tags:
-          type: array
-          items:
-            $ref: "#/components/schemas/Tag"
-        status:
-          type: string
-          enum:
-            - pending
-            - available
-            - sold
-    Category:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        name:
-          type: string
-    Tag:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        name:
-          type: string
+                          description: The relevant snippet of the newsletter
+                        metadata:
+                          type: object
+                          properties:
+                            primary_url:
+                              type: string
+                              format: uri
+                              description: Primary URL of the newsletter
+                            date:
+                              type: string
+                              format: date-time
+                              description: Publication date of the newsletter
+                            subject:
+                              type: string
+                              description: Subject/title of the newsletter
+                            newsletter_name:
+                              type: string
+                              description: Name of the newsletter
+                            message_id:
+                              type: string
+                              description: Unique message identifier
+                          required:
+                            - primary_url
+                            - date
+                            - subject
+                            - newsletter_name
+                            - message_id
+                        score:
+                          type: number
+                          format: float
+                          description: Relevance score for the chunk
+                      required:
+                        - content
+                        - metadata
+                        - score
+        "400":
+          description: Bad request
+        "404":
+          description: Server not found
+        "429":
+          description: Rate limit exceeded
+        "500":
+          description: Server error
