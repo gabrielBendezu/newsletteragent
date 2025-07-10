@@ -64,11 +64,11 @@ def query_rag():
 
         logger.info(f"Received query: {user_query}")
 
-        context: List[RAGChunk] = query_rag_system(user_query=user_query)
+        chunks: List[RAGChunk] = query_rag_system(user_query=user_query)
 
         # def query_rag_system(user_query: str) -> List[RAGChunk]: (inside rag_client)
 
-        if not context:
+        if not chunks:
             return jsonify({
                 'success': False,
                 'error': 'No relevant context found',
@@ -78,7 +78,7 @@ def query_rag():
         return jsonify({
             'success': True,
             'user_query': user_query,
-            'context': context,
+            'chunks': chunks,
             'timestamp': datetime.now().isoformat()
         })
 
