@@ -6,7 +6,8 @@ from typing import List
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
-from ..models import RAGChunk
+from models import RAGChunk
+from retrieval_pipeline.rag_client import query_rag_system  
 
 app = Flask(__name__)
 CORS(app)
@@ -62,8 +63,6 @@ def query_rag():
             return jsonify({'error': 'Missing required parameter: user_query'}), 400
 
         logger.info(f"Received query: {user_query}")
-
-        from retrieval_pipeline.rag_client import query_rag_system  
 
         context: List[RAGChunk] = query_rag_system(user_query=user_query)
 

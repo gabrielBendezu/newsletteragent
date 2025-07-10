@@ -2,7 +2,7 @@ from typing import List
 
 from typing import List, Optional
 from .retriever import NewsletterRetriever
-from ..models import RAGChunk
+from models import RAGChunk
 import logging
 
 logger = logging.getLogger(__name__)
