@@ -1,6 +1,6 @@
 from haystack import Pipeline
 from haystack.components.embedders import OpenAITextEmbedder, SentenceTransformersTextEmbedder
-from haystack_integrations.components.retrievers.qdrant import QdrantHybridRetriever
+from haystack_integrations.components.retrievers.qdrant import QdrantEmbeddingRetriever
 from haystack.utils import Secret
 from haystack_integrations.document_stores.qdrant import QdrantDocumentStore
 
@@ -20,7 +20,7 @@ class NewsletterRetriever:
         """Create the Qdrant document store."""
         return QdrantDocumentStore(
             url=Settings.QDRANT_URL,
-            api_key=Secret.from_env_var("OPENAI_API_KEY"),
+            api_key=Secret.from_env_var("QDRANT_API_KEY"),
             index=Settings.QDRANT_COLLECTION,
             embedding_dim=Settings.EMBEDDING_DIM,
             return_embedding=True,
@@ -44,7 +44,7 @@ class NewsletterRetriever:
     def _create_retrieval_pipeline(self) -> Pipeline:
         """Create the retrieval pipeline."""
         text_embedder = self._create_text_embedder()
-        retriever = QdrantHybridRetriever(
+        retriever = QdrantEmbeddingRetriever(
             document_store=self.document_store,
             top_k=10  # Adjust based on your needs
         )
